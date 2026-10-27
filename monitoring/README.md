@@ -68,3 +68,16 @@ La cible `localhost:9090` est `UP` et les premières requêtes PromQL ont été 
 ## Prochaine étape
 
 La configuration sera ensuite complétée afin de collecter les métriques du service conteneurisé utilisé par AutoScaleLab, notamment les métriques nécessaires à la politique d'auto-scaling.
+## Monitoring des conteneurs avec cAdvisor
+
+### Objectif
+
+cAdvisor permet de collecter les métriques CPU et mémoire des conteneurs Docker.
+Prometheus récupère ces métriques toutes les 15 secondes.
+
+### Démarrer cAdvisor
+
+Depuis PowerShell :
+
+```powershell
+docker run -d --name autoscalelab-cadvisor -p 8080:8080 -v /:/rootfs:ro -v /var/run:/var/run:ro -v /sys:/sys:ro -v /var/lib/docker/:/var/lib/docker:ro -v /dev/disk/:/dev/disk:ro gcr.io/cadvisor/cadvisor:v0.49.1
