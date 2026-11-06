@@ -46,7 +46,9 @@ class ScalingIntegrationTests {
 
 		mvc.perform(get("/api/status")).andExpect(status().isOk())
 				.andExpect(jsonPath("$.mode").value("SIMULATION"))
-				.andExpect(jsonPath("$.cpuQueryWarning").exists());
+				.andExpect(jsonPath("$.cpuQuery")
+						.value("avg(docker_container_cpu_percent{service=\"autoscalelab_app\"})"))
+				.andExpect(jsonPath("$.cpuQueryWarning").doesNotExist());
 		mvc.perform(get("/api/scaling")).andExpect(status().isOk());
 
 		mvc.perform(post("/api/scaling/check")).andExpect(status().isOk())

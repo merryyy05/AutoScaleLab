@@ -86,6 +86,24 @@ class AutoscalerControllerTest {
     }
 
     @Test
+    void unAvertissementSAfficheSiLaRequeteNeVisePasLeService() throws Exception {
+        AutoscalerProperties p = TestFixtures.properties();
+        AutoscalerProperties machineEntiere = new AutoscalerProperties(
+                p.cpuHigh(), p.cpuLow(), p.minReplicas(), p.maxReplicas(), p.serviceName(),
+                p.initialReplicas(), p.checkInterval(), p.cooldown(), "vector(90)");
+        MetricsService metrics = new MetricsService(machineEntiere, "http://localhost:1",
+                Duration.ofSeconds(1), Duration.ofSeconds(1));
+        ScalingService scaling = new ScalingService(cpu, swarm, machineEntiere, new MutableClock());
+
+        MockMvcBuilders
+                .standaloneSetup(new AutoscalerController(scaling, metrics, swarm, machineEntiere, false))
+                .build()
+                .perform(get("/api/status"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.cpuQueryWarning").exists());
+    }
+
+    @Test
     void prometheusInjoignableRenvoie503() throws Exception {
         mvc.perform(get("/api/prometheus"))
                 .andExpect(status().isServiceUnavailable())
