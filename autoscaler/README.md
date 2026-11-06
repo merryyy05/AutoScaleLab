@@ -83,8 +83,8 @@ docker_container_cpu_percent{service="autoscalelab_app",container="autoscalelab_
 docker_container_cpu_percent{service="autoscalelab_app",container="autoscalelab_app.2.def"} 64.0
 ```
 
-`avg(...)` calcule alors la moyenne de tous les réplicas. Tant que cette métrique n'existe pas,
-le résultat est vide et l'AutoScaler reste en `NO ACTION`.
+`avg(...)` calcule alors la moyenne de tous les réplicas. Si l'exporteur est arrêté, le
+résultat est vide et l'AutoScaler reste en `NO ACTION`.
 
 > Avec `docker stats`, 100 % correspond à un cœur. Une limite `cpus: "1.0"` par réplica
 > dans `swarm/docker-stack.yml` garde la valeur entre 0 et 100 % et donne leur sens aux seuils.
@@ -147,6 +147,12 @@ Prérequis :
 
 ```powershell
 .\mvnw.cmd spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=swarm"
+```
+
+Configuration de la démonstration (3 réplicas maximum, délai Docker allongé pour un PC chargé) :
+
+```powershell
+.\mvnw.cmd -B spring-boot:run "-Dspring-boot.run.arguments=--spring.profiles.active=swarm --autoscaler.max-replicas=3 --autoscaler.docker.timeout-seconds=20"
 ```
 
 Le profil `swarm` (`application-swarm.properties`) ne change qu'un paramètre :
