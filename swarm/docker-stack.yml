@@ -13,6 +13,15 @@ services:
     deploy:
       replicas: 1
 
+      # Limite de 1 coeur par réplica.
+      # docker stats mesure le CPU en % d'UN coeur (100 % = 1 coeur) : avec
+      # cette limite, 100 % = réplica saturé, et les seuils de l'AutoScaler
+      # (75 % / 30 %) se lisent en % de la capacité du réplica.
+      # Si cette limite change, adapter autoscaler.cpu-high / cpu-low.
+      resources:
+        limits:
+          cpus: "1.0"
+
       restart_policy:
         condition: on-failure
         delay: 5s
