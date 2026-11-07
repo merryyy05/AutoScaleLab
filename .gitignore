@@ -1,0 +1,6 @@
+# Python
+__pycache__/
+*.pyc
+
+# Résultats locaux des tests k6
+*-summary.json

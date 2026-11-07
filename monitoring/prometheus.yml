@@ -1,0 +1,24 @@
+global:
+  scrape_interval: 15s
+
+# Ports AutoScaleLab : Nginx 8080, AutoScaler 8085, exporteur 8000,
+# Prometheus 9090, cAdvisor 8082 (8080 est réservé à Nginx / Swarm).
+
+scrape_configs:
+  - job_name: "prometheus"
+    static_configs:
+      - targets: ["localhost:9090"]
+
+  # Facultatif : cAdvisor doit être lancé avec -p 8082:8080.
+  # L'AutoScaler n'utilise pas ces métriques.
+  - job_name: "cadvisor"
+    static_configs:
+      - targets: ["host.docker.internal:8082"]
+
+  # Exporteur Docker (monitoring/docker_exporter.py) : CPU de chaque réplica
+  # du service autoscalelab_app, utilisé par l'AutoScaler.
+  # `docker stats` prend environ 2 s : délai de scrape laissé à 10 s.
+  - job_name: "docker-exporter"
+    scrape_timeout: 10s
+    static_configs:
+      - targets: ["host.docker.internal:8000"]
